@@ -29,9 +29,29 @@
 
                   </v-layout>
                   <v-layout row wrap>
-                    <div v-bind:class="{ blurred: !simulated }">
-                        <h1>Graph</h1>
-                    </div>
+		  <div id="container" style="width:100%; height:400px;">
+			document.addEventListener('DOMContentLoaded', function () {
+			    var myChart = Highcharts.chart('container', {
+			    chart: {
+				type: 'bar'
+					},
+				title: {
+					text: 'Change in Temperature vs Time'
+					},
+				xAxis: {
+				title:{
+					text:'Years'
+						data:[1700,1725,1750,1775,1800,1825,1850,1875,1900,1925,1950,1975,2000,2025,2050,2075,2100]
+				}
+					},
+				yAxis: {
+					title: {																                     	text: 'Temparture'
+						data:[10,11,12,13,14,15,16,17,18,19,20]
+																		             						}
+																			     					},
+																							}																			});																	);
+		  </div>
+
                   </v-layout>
                 </v-container>
               </v-flex>
@@ -41,7 +61,7 @@
       </v-app>
     </div>
 
-
+    <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
     <script src="/static/index.js"></script>
