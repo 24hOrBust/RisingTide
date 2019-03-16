@@ -3,6 +3,7 @@
   <head>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <link href="/static/index.css" rel="stylesheet"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   </head>
   <body>
@@ -12,7 +13,25 @@
           <v-toolbar-title>Rising Tide</v-toolbar-title>
         </v-toolbar>
         <v-content>
-          <h1>Hello World</h1>
+          <v-container fluid grid-list-md>
+            <v-layout row wrap>
+              <v-flex xs4>
+                <emissions-slider name="GT C02"></emissions-slider>
+                <emissions-slider name="Aircraft"></emissions-slider>
+              </v-flex>
+              <v-flex>
+                <v-container fluid grid-list-md>
+                  <v-layout row wrap>
+                    <h1>Map</h1>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <h1>Graph</h1>
+                    {{ gtc02 }}
+                  </v-layout>
+                </v-container>
+              </v-flex>
+            </v-layout>
+          </v-container>
         </v-content>
       </v-app>
     </div>
