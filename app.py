@@ -1,5 +1,8 @@
 from flask import Flask, request, send_file, jsonify
 from seamodel import sealevel
+import pymagicc
+from pymagicc import scenarios
+import copy
 
 app = Flask(__name__)
 
