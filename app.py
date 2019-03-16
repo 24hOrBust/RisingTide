@@ -18,6 +18,7 @@ def simulate():
    ret_json = climate_model(fossil_gtc_carbon)
    sea_levels = get_sea_level(ret_json['NH_temps'])
    ret_json['sea_levels'] = sea_levels
+   ret_json.pop('NH_temps')
    return jsonify(ret_json)
 
 @app.route('/test_carbon', methods=['GET'])
