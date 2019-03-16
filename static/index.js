@@ -26,10 +26,12 @@ Vue.component('emissions-slider', {
 var app = new Vue({
   el: '#app',
   data: {
-    'gtc02':100
+    'gtc02':100,
+    simulated: false
   },
   methods: {
     simulate() {
+      this.simulated = true;
       console.log("SIMULATE")
     }
   }
