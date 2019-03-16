@@ -1,9 +1,9 @@
 
 Vue.component('emissions-slider', {
-  props: ['name','value', 'scale'],
+  props: ['name', 'value', 'scale'],
   data: function () {
     return {
-      'slider_value':this.value
+      'slider_value': this.value
     }
   },
   methods: {
@@ -26,8 +26,22 @@ Vue.component('emissions-slider', {
 var app = new Vue({
   el: '#app',
   data: {
-    'gtc02':100,
+    sliders: [],
     simulated: false
+  },
+  beforeMount() {
+    let self = this;
+    fetch('/static/config.json')
+      .then(function (response) {
+        return response.json();
+      }).then(function (json) {
+        let sliders = json.sliders;
+        console.log(sliders);
+        for (let slider of sliders) {
+          slider['value'] = 100;
+          self.sliders.push(slider)
+        }
+      })
   },
   methods: {
     simulate() {

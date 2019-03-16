@@ -16,7 +16,7 @@
           <v-container fluid grid-list-md>
             <v-layout row wrap>
               <v-flex xs4>
-                <emissions-slider name="GT C02" scale="3.71" v-model="gtc02"></emissions-slider>
+                <emissions-slider v-for="slider in sliders" v-bind:name="slider.name" v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
                 <v-btn @click="simulate" color="success">Simulate</v-btn>
               </v-flex>
               <v-flex>
@@ -24,7 +24,6 @@
                   <v-layout row wrap>
                     <div v-bind:class="{ blurred: !simulated }">
                       <h1>Map</h1>
-                      {{gtc02}}
                     </div>
 
                   </v-layout>

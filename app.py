@@ -1,4 +1,5 @@
 from flask import Flask, request, send_file, jsonify
+from seamodel import sealevel
 
 app = Flask(__name__)
 
@@ -6,11 +7,7 @@ app = Flask(__name__)
 def index():
   return send_file('static/index.html')
 
-@app.route('/api/simulation', methods=['POST'])
-def simulate():
-  return jsonify({'hello':'world'})
-
-@app.route('/test_carbon', methods=['GET'])
+@app.route('/api/simulate', methods=['GET'])
 def test_carbon():
    fossil_gtc_carbon = request.args.get('fossil_gtc_carbon')
    data = scenarios['RCP26']['WORLD']
