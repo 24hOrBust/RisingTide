@@ -15,14 +15,13 @@
         <button @click="simulate">Simulate</button>
       </div>
 
-      <div id="map">
-        <iframe src="https://labs.mapbox.com/bites/00307/?elev=0#9/0.1318/-49.6609" width="100%" height="100%"></iframe>
+      <div id="map" v-bind:class="{blurred:!simulated}">
+        <iframe v-bind:src="mapUrl" width="100%" height="100%"></iframe>
       </div>
 
       <div id="plot" v-bind:class="{blurred:!simulated}">
         <highcharts :options="chartOptions"></highcharts>
       </div>
-
     </div>
     <script src="/static/dark-unica.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>

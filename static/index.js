@@ -8,8 +8,12 @@ Vue.component('emissions-slider', {
   },
   methods: {
     update() {
-      let result = this.scale * (this.slider_value / 100)
-      this.$emit('input', result);
+      this.$emit('input', this.result);
+    }
+  },
+  computed: {
+    result() {
+      return (this.scale * (this.slider_value / 100)).toFixed(2);
     }
   },
   template: `
@@ -20,7 +24,7 @@ Vue.component('emissions-slider', {
               <input class="slider" type="range" ref="slider" v-model="slider_value" @input="update" min="0" max="200"></input>
             </div>
           </p>
-          <div class="slider-value">{{slider_value}}%</div>
+          <div class="slider-value">{{result}} GT CO<sub>2</sub> | {{slider_value}}%</div>
         </div>`,
 })
 
@@ -40,8 +44,8 @@ var options = {
     plotLines: [{
       value: 0,
       width: 1,
-      color: '#808080'
-    }]
+      color: '#FF0000'
+    }],
   },
   tooltip: {
     valueSuffix: '°C'
@@ -49,7 +53,14 @@ var options = {
   series: [{
     name: 'Global Mean Temperature',
     data: [],
-    pointStart: 1765
+    pointStart: 1765,
+    point: {
+      events: {
+        mouseOver: function() {
+          console.log(this.x);
+        }
+      }
+    }
   }]
 }
 
@@ -57,8 +68,9 @@ var app = new Vue({
   el: '#app',
   data: {
     sliders: [],
-    simulated: false,
-    chartOptions: options
+    simulated: true,
+    chartOptions: options,
+    selectedSeaLevel: 0
   },
   beforeMount() {
     let self = this;
@@ -88,6 +100,11 @@ var app = new Vue({
         self.simulated = true;
         
       })
+    }
+  },
+  computed: {
+    mapUrl() {
+      return `https://labs.mapbox.com/bites/00307/?elev=${this.selectedSeaLevel}#9/0.1318/-49.6609`
     }
   }
 });

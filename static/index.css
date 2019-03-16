@@ -16,17 +16,18 @@ body {
 }
 
 .blurred {
-  -webkit-filter: blur(2px);
-  -moz-filter: blur(2px);
-  -o-filter: blur(2px);
-  -ms-filter: blur(2px);
-  filter: blur(2px);
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
 }
 
 #app {
+  height: 60%;
   display: grid;
   grid-template-columns: 400px auto;
-  grid-template-rows: 0.75hv 0.15vh;
+  grid-template-rows: 0.75fr 0.25fr;
 }
 
 #sliders {
