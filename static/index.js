@@ -1,17 +1,23 @@
 
 Vue.component('emissions-slider', {
-  props: ['name'],
+  props: ['name','value', 'scale'],
   data: function () {
     return {
-      'value':100
+      'slider_value':this.value
+    }
+  },
+  methods: {
+    update() {
+      let result = this.scale * (this.slider_value / 100)
+      this.$emit('input', result);
     }
   },
   template: `
-  <v-container fluid grid-list-lg>
+  <v-container fluid grid-list-lg style="padding: 0px !important">
     <v-layout row wrap>
       <v-flex xs12>
-        <v-slider ref="slider" v-bind:label="name" v-model="value"></v-slider>
-        <div class="slider-value">{{value}}</div>
+        <v-slider ref="slider" v-bind:label="name" v-model="slider_value" @input="update" min="0" max="200"></v-slider>
+        <div class="slider-value">{{slider_value}}%</div>
       </v-flex>
     </v-layout>
   </v-container>`,
@@ -20,6 +26,11 @@ Vue.component('emissions-slider', {
 var app = new Vue({
   el: '#app',
   data: {
-    gtc02: 100
+    'gtc02':100
+  },
+  methods: {
+    simulate() {
+      console.log("SIMULATE")
+    }
   }
 });

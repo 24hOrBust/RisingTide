@@ -16,17 +16,17 @@
           <v-container fluid grid-list-md>
             <v-layout row wrap>
               <v-flex xs4>
-                <emissions-slider name="GT C02"></emissions-slider>
-                <emissions-slider name="Aircraft"></emissions-slider>
+                <emissions-slider name="GT C02" scale="3.71" v-model="gtc02"></emissions-slider>
+                <v-btn @click="simulate" color="success">Simulate</v-btn>
               </v-flex>
               <v-flex>
                 <v-container fluid grid-list-md>
                   <v-layout row wrap>
                     <h1>Map</h1>
+                    {{gtc02}}
                   </v-layout>
                   <v-layout row wrap>
                     <h1>Graph</h1>
-                    {{ gtc02 }}
                   </v-layout>
                 </v-container>
               </v-flex>
