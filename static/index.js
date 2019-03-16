@@ -91,7 +91,7 @@ var app = new Vue({
       let self = this;
       self.simulated = false;
       var totalCarbon = this.sliders.map(s => s.value).reduce((a,b)=>a+b);
-      fetch('/api/simulate?fossil_gtc_carbon=' + totalCarbon).then(function(resp){
+      fetch('/api/simulation?fossil_gtc_carbon=' + totalCarbon).then(function(resp){
         return resp.json();
       }).then(function(body) {
         console.log(body);
