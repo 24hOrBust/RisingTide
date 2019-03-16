@@ -3,6 +3,7 @@
   <head>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <link href="/static/index.css" rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   </head>
   <body>
@@ -12,7 +13,30 @@
           <v-toolbar-title>Rising Tide</v-toolbar-title>
         </v-toolbar>
         <v-content>
-          <h1>Hello World</h1>
+          <v-container fluid grid-list-md>
+            <v-layout row wrap>
+              <v-flex xs4>
+                <emissions-slider name="GT C02" scale="3.71" v-model="gtc02"></emissions-slider>
+                <v-btn @click="simulate" color="success">Simulate</v-btn>
+              </v-flex>
+              <v-flex>
+                <v-container fluid grid-list-md>
+                  <v-layout row wrap>
+                    <div v-bind:class="{ blurred: !simulated }">
+                      <h1>Map</h1>
+                      {{gtc02}}
+                    </div>
+
+                  </v-layout>
+                  <v-layout row wrap>
+                    <div v-bind:class="{ blurred: !simulated }">
+                        <h1>Graph</h1>
+                    </div>
+                  </v-layout>
+                </v-container>
+              </v-flex>
+            </v-layout>
+          </v-container>
         </v-content>
       </v-app>
     </div>
