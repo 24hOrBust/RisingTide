@@ -4,66 +4,33 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
     <link href="/static/index.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.3/css/themes/dark-unica.css" rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   </head>
   <body>
     <div id="app">
-      <v-app dark>
-        <v-toolbar dark fixed app>
-          <v-toolbar-title>Rising Tide</v-toolbar-title>
-        </v-toolbar>
-        <v-content>
-          <v-container fluid grid-list-md>
-            <v-layout row wrap>
-              <v-flex xs4>
-                <emissions-slider v-for="slider in sliders" v-bind:name="slider.name" v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
-                <v-btn @click="simulate" color="success">Simulate</v-btn>
-              </v-flex>
-              <v-flex>
-                <v-container fluid grid-list-md>
-                  <v-layout row wrap>
-                    <div v-bind:class="{ blurred: !simulated }">
-                      <h1>Map</h1>
-                    </div>
 
-                  </v-layout>
-                  <v-layout row wrap>
-			  <div id="container" style="width:100%; height:400px;">
-			<script>
-			document.addEventListener('DOMContentLoaded', function () {
-			    var myChart = Highcharts.chart('container', {
-			    chart: {
-				type: 'bar'
-					},
-				title: {
-					text: 'Change in Temperature vs Time'
-					},
-				xAxis: {
-				title:{
-					text:'Years'
-						data:[1700,1725,1750,1775,1800,1825,1850,1875,1900,1925,1950,1975,2000,2025,2050,2075,2100]
-				}
-					},
-				yAxis: {
-					title: {																                     	text: 'Temparture'
-						data:[10,11,12,13,14,15,16,17,18,19,20]
-																		             						}
-																			     					},
-																							}																			)};																	);
-																							</script>
-		  </div>
+      <div id="sliders">
+        <emissions-slider v-for="slider in sliders" v-bind:name="slider.name" v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
+        <button @click="simulate">Simulate</button>
+      </div>
 
-                  </v-layout>
-                </v-container>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-content>
-      </v-app>
+      <div id="map">
+        <img src="https://www.visualcapitalist.com/wp-content/uploads/2018/03/export-map-share.png" width="100%" height="100%"/>
+      </div>
+
+      <div id="plot" v-bind:class="{blurred:!simulated}">
+        <highcharts :options="chartOptions"></highcharts>
+      </div>
+
     </div>
+    <script src="/static/dark-unica.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@6/highcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.3/themes/dark-unica.src.js"></script>
+    <!-- vue-highcharts should be load after Highcharts -->
+    <script src="https://cdn.jsdelivr.net/npm/vue-highcharts/dist/vue-highcharts.min.js"></script>
     <script src="/static/index.js"></script>
   </body>
 </html>
