@@ -39,7 +39,7 @@ hr {
 #container {
   display: grid;
   grid-template-columns: 400px auto;
-  grid-template-rows: 0.80fr 0.20fr 0;
+  grid-template-rows: 1.1fr 0.20fr 0;
 }
 
 #sliders {
@@ -137,4 +137,8 @@ button:hover {
   text-align: center;
   color: red;
   font-family: 'Open Sans', sans-serif;
+}
+
+.mapboxgl-popup-close-button {
+  display: none
 }
