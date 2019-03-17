@@ -26,7 +26,7 @@ body {
 #app {
   display: grid;
   grid-template-columns: 30% 70%;
-  grid-template-rows: 100% 30%;
+  grid-template-rows: 120% 30%;
 }
 
 #sliders {

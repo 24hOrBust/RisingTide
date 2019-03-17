@@ -124,94 +124,73 @@ var mapStyle = {
       "type": "raster",
       "source": "mapbox",
       "source-layer": "mapbox_satellite_full",
-    }]
+    }
+  ]
 };
 
 var map = new mapboxgl.Map({
   container: 'map',
-  zoom: 4,
+  zoom: 2,
+  maxBounds: new mapboxgl.LngLatBounds(
+    new mapboxgl.LngLat(-180, -80),
+    new mapboxgl.LngLat(180, 80)),
   center: [-73.240966, 40.798059],
   style: mapStyle
 });
 map.addControl(new mapboxgl.NavigationControl());
 map.scrollZoom.disable();
-
-var sea_level = 0;
-var acc = 0;
-pairs = [];
-//var mutex = 0;
-[map.getBounds()._ne.lat, map.getBounds()._sw.lat].forEach(function (lat, index1) {
-  [map.getBounds()._ne.lng, map.getBounds()._sw.lng].forEach(function (lng, index2) {
-    pairs[acc] = [lat, lng];
-    acc++;
-  });
+map.on("resize", function () {
+  render();
+  setTimeout(function() {
+    render();
+  }, 500);
+});
+map.on("moveend", function () {
+  render();
+  setTimeout(function() {
+    render();
+  }, 500);
+});
+map.on("zoomend", function () {
+  render();
+  setTimeout(function() {
+    render();
+  }, 500);
 });
 
 
+render();
+setTimeout(function() {
+  render();
+}, 500);
 
-var canvas = document.createElement("canvas");
-canvas.width = 256;
-canvas.height = 256;
-var context = canvas.getContext("2d");
-
-
-var img = new Image(256, 256);
-img.onload = function () {
-  processTopography(context, 1);
-
-
-  var img2 = new Image(256, 256);
-  img2.onload = function () {
-    processTopography(context, 2);
-
-
-    var img3 = new Image(256, 256);
-    img3.onload = function () {
-      processTopography(context, 3);
-
-
-      var img4 = new Image(256, 256);
-      img4.onload = function () {
-        processTopography(context, 4);
-      }
-      var callArgs4 = latLng2tile(pairs[3][0], pairs[3][1], Math.floor(map.getZoom()));
-      var tile4 = 'https://a.tiles.mapbox.com/v4/mapbox.terrain-rgb/' + callArgs4.tileCall + '.pngraw?access_token=' + mapboxgl.accessToken;
-      console.log(tile4);
-      img2.src = tile4;
-
-
-
-    }
-    var callArgs3 = latLng2tile(pairs[2][0], pairs[2][1], Math.floor(map.getZoom()));
-    var tile3 = 'https://a.tiles.mapbox.com/v4/mapbox.terrain-rgb/' + callArgs3.tileCall + '.pngraw?access_token=' + mapboxgl.accessToken;
-    console.log(tile3);
-    img2.src = tile3;
-
-
-
-  }
-  var callArgs2 = latLng2tile(pairs[1][0], pairs[1][1], Math.floor(map.getZoom()));
-  var tile2 = 'https://a.tiles.mapbox.com/v4/mapbox.terrain-rgb/' + callArgs2.tileCall + '.pngraw?access_token=' + mapboxgl.accessToken;
-  console.log(tile2);
-  img2.src = tile2;
-
-
-
+function render() {
+  var avg = (map.getBounds()._ne.lng + map.getBounds()._sw.lng + 1.0) / 2.0;
+  [map.getBounds()._ne.lat, map.getBounds()._sw.lat].forEach(function (lat, index1) {
+    [map.getBounds()._ne.lng, avg, map.getBounds()._sw.lng].forEach(function (lng, index2) {
+      var callArgs = latLng2tile(lat, lng, Math.floor(map.getZoom()));
+      var tile = 'https://a.tiles.mapbox.com/v4/mapbox.terrain-rgb/' + callArgs.tileCall + '@2x.pngraw?access_token=' + mapboxgl.accessToken;
+      var canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 512;
+      var context = canvas.getContext("2d");
+      var img = new Image(512, 512);
+      img.crossOrigin = "Anonymous";
+      img.onload = function() {
+        context.drawImage(img, 0, 0);
+        processTopography(canvas, context, callArgs, index1*3 + index2 + 1);
+      };
+      img.src = tile;
+    });
+  });
 }
-var callArgs = latLng2tile(pairs[0][0], pairs[0][1], Math.floor(map.getZoom()));
-var tile = 'https://a.tiles.mapbox.com/v4/mapbox.terrain-rgb/' + callArgs.tileCall + '.pngraw?access_token=' + mapboxgl.accessToken;
-console.log(tile);
-img.src = tile;
 
-
-function processTopography(context, acc) {
-  var imgData = context.getImageData(0, 0, 256, 256);
+function processTopography(canvas, context, callArgs, acc) {
+  var sea_level = 500;
+  var imgData = context.getImageData(0, 0, 512, 512);
 
   for (var i = 0; i < imgData.data.length; i += 4) {
     height = -10000 + ((imgData.data[i] * 256 * 256 + imgData.data[i + 1] * 256 + imgData.data[i + 2]) * 0.1);
-    if (i % 16384 == 0) {
-      console.log(height);
-    }
     if (height > sea_level) {
       imgData.data[i + 3] = 0;
     } else {
@@ -225,8 +204,6 @@ function processTopography(context, acc) {
   context.putImageData(imgData, 0, 0);
   context.save();
 
-  console.log(canvas.toDataURL("image/png"));
-
   var image_BBOX = tileToBBOX([callArgs.tileX, callArgs.tileY, Math.floor(map.getZoom())]);
   new_overlay = {
     "type": "image",
@@ -238,20 +215,44 @@ function processTopography(context, acc) {
       [image_BBOX[0], image_BBOX[1]],
     ]
   };
-  var layer = {
-    "id": "overlay" + acc,
-    "source": "overlay" + acc,
-    "type": "raster",
-    "paint": { "raster-opacity": 0.85 }
-  };
-  if (acc == 1) {
-    mapStyle.sources.overlay1 = new_overlay;
-  } else if (acc == 2) {
-    mapStyle.sources.overlay2 = new_overlay;
-  } else if (acc == 3) {
-    mapStyle.sources.overlay3 = new_overlay;
-  } else if (acc == 4) {
-    mapStyle.sources.overlay4 = new_overlay;
+  if (map.getSource("overlay" + acc) == undefined) {
+    map.addSource("overlay" + acc, new_overlay);
+  } else {
+    if (map.getLayer("overlay" + acc) !== undefined) {
+      map.removeLayer("overlay" + acc);
+    }
+    map.removeSource("overlay" + acc);
+    map.addSource("overlay" + acc, new_overlay);
   }
-  mapStyle.layers[acc] = layer;
-}
+  layer =
+    {
+      "id": "overlay" + acc,
+      "source": "overlay" + acc,
+      "type": "raster",
+      "paint": { "raster-opacity": 0.85 }
+    };
+  my_overlay = map.getStyle().sources[layer.id];
+  if(acc > 6) {
+    console.log("Got acc of " + acc);
+    return;
+  }
+  var add_layer = true;
+  for (var l of map.getStyle().layers) {
+    if(map.getSource(l.id) == undefined) {
+      continue;
+    }
+    over = map.getStyle().sources[l.id]
+    var match = true;
+    for(var i in over.coordinates) {
+      for(var j in [0,1]) {
+        match &= (over.coordinates[i][j] == my_overlay.coordinates[i][j])
+      }
+    }
+    if(match == true) {
+      add_layer = false;
+    }
+  }
+  if (add_layer == true) {
+    map.addLayer(layer);
+  }
+};
