@@ -64,7 +64,7 @@ var options = {
             plotLines: [{
               id: 'xPlotLine',
               label: {
-                text: 'Select Year',
+                text: 'Selected Year',
                 style: {
                   color: 'white',
                   fontWeight: 'bold'
@@ -101,6 +101,9 @@ var options = {
         console.log("x" + x);
         console.log("start " + (x - START_YEAR))
         let yearIndex = Math.floor(x - START_YEAR);
+        if (yearIndex > 2099 - START_YEAR) {
+          yearIndex = 2099 - START_YEAR;
+        }
         sea_level = app.seaLevels[yearIndex];
         render();
         setTimeout(function () {
