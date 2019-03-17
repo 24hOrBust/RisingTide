@@ -21,7 +21,7 @@ def sealevel_old(temperatures):
     return sealevels
 
 def sealevel(temperatures):
-  return list(map(lambda t : -2.51 + 1.63*t - 11.4, temperatures))
+  return list(map(lambda t : -2.51 + 1.63*t - 12.68, temperatures))
 
 
 def get_sea_level(temp_deltas):

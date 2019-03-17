@@ -12,7 +12,7 @@
       <v-app dark>
         <div id="container">
           <div id="sliders">
-            <emissions-slider v-for="slider in sliders" v-bind:name="slider.name" v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
+            <emissions-slider v-for="(slider,index) in sliders" v-bind:first="index == 0" v-bind:name="slider.name" v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
             <button @click="simulate">Simulate</button>
           </div>
   
@@ -21,7 +21,7 @@
           </div>
   
           <div id="plot" v-bind:class="{blurred:!simulated}">
-            <highcharts :options="chartOptions"></highcharts>
+            <highcharts ref="chart" :options="chartOptions"></highcharts>
           </div>
         </div>
       </v-app>

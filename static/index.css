@@ -28,10 +28,9 @@ body {
 }
 
 #container {
-  height: 120%;
   display: grid;
   grid-template-columns: 400px auto;
-  grid-template-rows: 0.80fr 0.2fr;
+  grid-template-rows: 0.80fr 0.2fr 0;
 }
 
 #sliders {
@@ -60,8 +59,12 @@ body {
   grid-column-end: 2;
 }
 
-.slidecontainer {
-  width: 100%; /* Width of the outside container */
+.sliderheader {
+  margin-top: -20px;
+}
+
+.sliderheader .first {
+  margin-top: 0px;
 }
 
 .slider {

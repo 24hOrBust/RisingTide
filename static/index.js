@@ -2,7 +2,7 @@
 const START_YEAR = 1765;
 
 Vue.component('emissions-slider', {
-  props: ['name', 'value', 'scale'],
+  props: ['name', 'value', 'scale', 'first'],
   data: function () {
     return {
       'slider_value': 100
@@ -20,13 +20,9 @@ Vue.component('emissions-slider', {
   },
   template: `
         <div>
-          <p>
-            <h3>{{name}}</h3>
-            <div class="slidercontainer">
-            <v-slider ref="slider" v-model="slider_value" @input="update" min="0" max="200"></v-slider> 
-            </div>
-          </p>
-          <div class="slider-value">{{result}} GT CO<sub>2</sub> | {{slider_value}}%</div>
+          <h3 v-bind:class={sliderheader:!first}>{{name}}</h3>
+          <v-slider ref="slider" v-model="slider_value" @input="update" min="0" max="200"></v-slider>
+          <div class="slider-value">{{result}} GT CO<sub>2</sub> | {{slider_value}}%</div> 
         </div>`,
 })
 
@@ -35,6 +31,7 @@ var options = {
     text: 'Global Average Temperature',
     color: "#fffff",
   },
+  trackByArea: true,
   xAxis: {
     crosshair: true
   },
@@ -53,18 +50,68 @@ var options = {
   tooltip: {
     valueSuffix: '°C'
   },
+  chart: {
+    events: {
+      click: function (e) {
+        var chart = this;
+
+
+        var x = e.xAxis[0].value;
+        var y = e.yAxis[0].value;
+        if (chart.xAxis[0].plotLinesAndBands.length > 0) {
+          chart.xAxis[0].update({
+            plotLines: [{
+              id: 'xPlotLine',
+              label: {
+                text: 'Select Year',
+                style: {
+                  color: 'white',
+                  fontWeight: 'bold'
+                },
+              },
+              value: x,
+              width: 1,
+              color: '#C0C0C0'
+            }]
+          });
+
+        } else {
+          chart.xAxis[0].addPlotLine({
+            id: 'xPlotLine',
+            label: {
+              text: 'Select Year',
+              style: {
+                color: 'white',
+              },
+            },
+            value: x,
+            width: 1,
+            color: '#C0C0C0'
+          });
+
+          chart.yAxis[0].addPlotLine({
+            id: 'yPlotLine',
+            value: y,
+            width: 1,
+            color: '#C0C0C0'
+          });
+        }
+
+        console.log("x" + x);
+        console.log("start " + (x - START_YEAR))
+        let yearIndex = Math.floor(x - START_YEAR);
+        console.log(app.seaLevels[yearIndex]);
+        app.selectedSeaLevel = app.seaLevels[yearIndex];
+      }
+
+    },
+  },
   series: [{
     name: 'Global Mean Temperature',
     data: [],
     pointStart: START_YEAR,
     point: {
-      events: {
-        mouseOver: function() {
-          let yearIndex = this.x - START_YEAR;
-          console.log(app.seaLevels[yearIndex]);
-          app.selectedSeaLevel = app.seaLevels[yearIndex];
-        }
-      }
+
     }
   }]
 }
@@ -96,16 +143,32 @@ var app = new Vue({
     simulate() {
       let self = this;
       self.simulated = false;
-      var totalCarbon = this.sliders.map(s => Number(s.value)).reduce((a,b)=>a+b);
-      fetch('/api/simulation?fossil_gtc_carbon=' + totalCarbon).then(function(resp){
+      var totalCarbon = this.sliders.map(s => Number(s.value)).reduce((a, b) => a + b);
+      fetch('/api/simulation?fossil_gtc_carbon=' + totalCarbon).then(function (resp) {
         return resp.json();
-      }).then(function(body) {
+      }).then(function (body) {
         console.log(body);
         self.chartOptions.series[0].data = body.global_temps;
         self.seaLevels = body.sea_levels;
         //self.chartOptions.series[0].pointStart = body.start_year;
         self.simulated = true;
-        
+
+        self.chartOptions.xAxis.plotLines = [{
+          id: 'xPlotLine',
+          value: 2075,
+          width: 1,
+          color: '#C0C0C0',
+          label: {
+            text: 'Select Year',
+            style: {
+              color: 'white',
+              fontWeight: 'bold'
+            },
+          }
+        }]
+
+        self.selectedSeaLevel = self.seaLevels[ 2075 - START_YEAR];
+
       })
     }
   },
