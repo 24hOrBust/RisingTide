@@ -25,33 +25,32 @@ body {
 
 #app {
   display: grid;
-  grid-template-columns: 400px auto;
-  grid-template-rows: 0.75hv 0.15vh;
+  grid-template-columns: 30% 70%;
+  grid-template-rows: 100% 30%;
 }
 
 #sliders {
-  grid-area: 'sliders';
   grid-row-start: 1;
-  grid-row-end: 2;
+  grid-row-end: 3;
   grid-column-start: 1;
-  grid-column-start: 1;
+  grid-column-end: 1;
   padding: 10px;
+  height: 100%;
 }
 
 #map {
-  grid-area: 'map';
   grid-row-start: 1;
   grid-row-end: 1;
   grid-column-start: 2;
-  grid-column-start: 2;
+  grid-column-end: 2;
 }
 
 #plot {
-  grid-area: 'plot';
   grid-row-start: 2;
   grid-row-end: 2;
   grid-column-start: 2;
-  grid-column-start: 2;
+  grid-column-end: 2;
+  height: 40%;
 }
 
 .slidecontainer {
@@ -94,4 +93,8 @@ button {
 
 button:hover {
   background-color: #AA0000;
+}
+
+.invCanvas {
+  display: none;
 }
