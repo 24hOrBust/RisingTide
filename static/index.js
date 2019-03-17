@@ -100,8 +100,12 @@ var options = {
         console.log("x" + x);
         console.log("start " + (x - START_YEAR))
         let yearIndex = Math.floor(x - START_YEAR);
-        console.log(app.seaLevels[yearIndex]);
-        app.selectedSeaLevel = app.seaLevels[yearIndex];
+        sea_level = app.seaLevels[yearIndex];
+        render();
+        setTimeout(function () {
+          render();
+        }, 500);
+
       }
 
     },
@@ -167,7 +171,12 @@ var app = new Vue({
           }
         }]
 
-        self.selectedSeaLevel = self.seaLevels[ 2075 - START_YEAR];
+        sea_level = app.seaLevels[2075 - START_YEAR];
+        render();
+        setTimeout(function () {
+          render();
+        }, 500);
+
 
       })
     }
@@ -218,37 +227,37 @@ var mapStyle = {
 
 var map = new mapboxgl.Map({
   container: 'map',
-  zoom: 2,
+  zoom: 8,
   maxBounds: new mapboxgl.LngLatBounds(
     new mapboxgl.LngLat(-180, -80),
     new mapboxgl.LngLat(180, 80)),
-  center: [-73.240966, 40.798059],
+  center: [-74.0060, 40.7128],
   style: mapStyle
 });
 map.addControl(new mapboxgl.NavigationControl());
 map.scrollZoom.disable();
 map.on("resize", function () {
   render();
-  setTimeout(function() {
+  setTimeout(function () {
     render();
   }, 500);
 });
 map.on("moveend", function () {
   render();
-  setTimeout(function() {
+  setTimeout(function () {
     render();
   }, 500);
 });
 map.on("zoomend", function () {
   render();
-  setTimeout(function() {
+  setTimeout(function () {
     render();
   }, 500);
 });
 
 
 render();
-setTimeout(function() {
+setTimeout(function () {
   render();
 }, 500);
 
@@ -264,17 +273,17 @@ function render() {
       var context = canvas.getContext("2d");
       var img = new Image(512, 512);
       img.crossOrigin = "Anonymous";
-      img.onload = function() {
+      img.onload = function () {
         context.drawImage(img, 0, 0);
-        processTopography(canvas, context, callArgs, index1*3 + index2 + 1);
+        processTopography(canvas, context, callArgs, index1 * 3 + index2 + 1);
       };
       img.src = tile;
     });
   });
 }
 
+var sea_level = 0;
 function processTopography(canvas, context, callArgs, acc) {
-  var sea_level = 500;
   var imgData = context.getImageData(0, 0, 512, 512);
 
   for (var i = 0; i < imgData.data.length; i += 4) {
@@ -320,23 +329,23 @@ function processTopography(canvas, context, callArgs, acc) {
       "paint": { "raster-opacity": 0.85 }
     };
   my_overlay = map.getStyle().sources[layer.id];
-  if(acc > 6) {
+  if (acc > 6) {
     console.log("Got acc of " + acc);
     return;
   }
   var add_layer = true;
   for (var l of map.getStyle().layers) {
-    if(map.getSource(l.id) == undefined) {
+    if (map.getSource(l.id) == undefined) {
       continue;
     }
     over = map.getStyle().sources[l.id]
     var match = true;
-    for(var i in over.coordinates) {
-      for(var j in [0,1]) {
+    for (var i in over.coordinates) {
+      for (var j in [0, 1]) {
         match &= (over.coordinates[i][j] == my_overlay.coordinates[i][j])
       }
     }
-    if(match == true) {
+    if (match == true) {
       add_layer = false;
     }
   }
