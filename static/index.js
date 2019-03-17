@@ -51,7 +51,7 @@ var options = {
     valueSuffix: '°C'
   },
   chart: {
-    height:window.innerHeight / 1.8,
+    height: window.innerHeight / 1.8,
     events: {
       click: function (e) {
         var chart = this;
@@ -196,7 +196,11 @@ var app = new Vue({
 });
 
 
+//Returns a JSON object holding semi-arbitrary bounds given a latitude, longitude, and zoom
+//The object holds information of where in the API some topographical data is
+//Torn from a MapBox example after hours of hunting
 var latLng2tile = function (lat, lon, zoom) {
+  //Each given zoom of the data has 2^zoom tiles in each dimension
   var eLng = (lon + 180) / 360 * Math.pow(2, zoom);
   var eLat = (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom);
   //x coord in image tile of lat/lng
@@ -211,8 +215,10 @@ var latLng2tile = function (lat, lon, zoom) {
   return { "tileCall": "" + zoom + "/" + eLng + "/" + eLat, "tileX": eLng, "tileY": eLat, "pX": xInd, "pY": yInd, "arrInd": fInd }
 };
 
+//TODO: Delete from prod
 mapboxgl.accessToken = 'pk.eyJ1IjoiY29oZW5zMTIzIiwiYSI6ImNqdGJ6cTRidDByOHk0NnN6Mmg2ZmUyOTMifQ.ik4nlHsUtlGK1bhDy0-1yw';
 
+//Initial map styling, including only the satellite imagery
 var mapStyle = {
   "version": 8,
   "name": "Water Level",
@@ -232,6 +238,8 @@ var mapStyle = {
   ]
 };
 
+//Create the map, and you can't scroll off the sides (it causes visual glitches)
+//Centered on NYC
 var map = new mapboxgl.Map({
   container: 'map',
   zoom: 8,
@@ -241,10 +249,16 @@ var map = new mapboxgl.Map({
   center: [-74.0060, 40.7128],
   style: mapStyle
 });
+
+//Restricts zoom to only the bottoms
+//Integer zoom levels are basically a must to prevent visual issues
 map.addControl(new mapboxgl.NavigationControl());
 map.scrollZoom.disable();
+
+//Re-render the sea level data whenever we move etc
 map.on("resize", function () {
   render();
+  //Timeouts exist to deal with inconsistencies in the MapBox engine hooks
   setTimeout(function () {
     render();
   }, 500);
@@ -262,26 +276,32 @@ map.on("zoomend", function () {
   }, 500);
 });
 
-
+//Draw the water level for the first time
 render();
 setTimeout(function () {
   render();
 }, 500);
 
+//Renders all the overlays
 function render() {
   var avg = (map.getBounds()._ne.lng + map.getBounds()._sw.lng + 1.0) / 2.0;
+  //Sample top left, top mid, top right and the 3 bottoms to get topographical tiles
   [map.getBounds()._ne.lat, map.getBounds()._sw.lat].forEach(function (lat, index1) {
     [map.getBounds()._ne.lng, avg, map.getBounds()._sw.lng].forEach(function (lng, index2) {
+      //Generate and retrieve topographical location
       var callArgs = latLng2tile(lat, lng, Math.floor(map.getZoom()));
       var tile = 'https://a.tiles.mapbox.com/v4/mapbox.terrain-rgb/' + callArgs.tileCall + '@2x.pngraw?access_token=' + mapboxgl.accessToken;
       var canvas = document.createElement("canvas");
+      // Images are a fixed
       canvas.width = 512;
       canvas.height = 512;
       var context = canvas.getContext("2d");
       var img = new Image(512, 512);
+      //Prevents XSS preventions from crashing everything
       img.crossOrigin = "Anonymous";
       img.onload = function () {
         context.drawImage(img, 0, 0);
+        //When the image is loaded, process the RGB into heights and generate the overlay
         processTopography(canvas, context, callArgs, index1 * 3 + index2 + 1);
       };
       img.src = tile;
@@ -289,10 +309,12 @@ function render() {
   });
 }
 
+//Global variable of change in sea level in meters
 var sea_level = 0;
 function processTopography(canvas, context, callArgs, acc) {
   var imgData = context.getImageData(0, 0, 512, 512);
 
+  //Iterate over all of the pixels, putting a slight blue tinge over pixels determined to be below sea level
   for (var i = 0; i < imgData.data.length; i += 4) {
     height = -10000 + ((imgData.data[i] * 256 * 256 + imgData.data[i + 1] * 256 + imgData.data[i + 2]) * 0.1);
     if (height > sea_level) {
@@ -308,6 +330,7 @@ function processTopography(canvas, context, callArgs, acc) {
   context.putImageData(imgData, 0, 0);
   context.save();
 
+  //As tilebelt library for where the tile we just generated should go on the map
   var image_BBOX = tileToBBOX([callArgs.tileX, callArgs.tileY, Math.floor(map.getZoom())]);
   new_overlay = {
     "type": "image",
@@ -319,13 +342,17 @@ function processTopography(canvas, context, callArgs, acc) {
       [image_BBOX[0], image_BBOX[1]],
     ]
   };
+  //Add the source if we don't have it (first time run only, mostly)
   if (map.getSource("overlay" + acc) == undefined) {
     map.addSource("overlay" + acc, new_overlay);
   } else {
+    //Layers are dependent on there sources, so remove it first
+    //Only one layer per source
     if (map.getLayer("overlay" + acc) !== undefined) {
       map.removeLayer("overlay" + acc);
     }
     map.removeSource("overlay" + acc);
+    //Put new source in
     map.addSource("overlay" + acc, new_overlay);
   }
   layer =
@@ -336,17 +363,20 @@ function processTopography(canvas, context, callArgs, acc) {
       "paint": { "raster-opacity": 0.85 }
     };
   my_overlay = map.getStyle().sources[layer.id];
+  //This situation can be caused by async issues, but should no longer be possible
   if (acc > 6) {
     console.log("Got acc of " + acc);
     return;
   }
   var add_layer = true;
+  //Loop over all the other layers to verify we aren't doubling up
   for (var l of map.getStyle().layers) {
     if (map.getSource(l.id) == undefined) {
       continue;
     }
     over = map.getStyle().sources[l.id]
     var match = true;
+    //We use coordinate locations to verify that two overlays have the same topographical data
     for (var i in over.coordinates) {
       for (var j in [0, 1]) {
         match &= (over.coordinates[i][j] == my_overlay.coordinates[i][j])
@@ -356,6 +386,7 @@ function processTopography(canvas, context, callArgs, acc) {
       add_layer = false;
     }
   }
+  //Add the layer back in when it's done
   if (add_layer == true) {
     map.addLayer(layer);
   }
