@@ -26,6 +26,5 @@ def sealevel(temperatures):
 
 def get_sea_level(temp_deltas):
     # 8.5 was the average global surface temp in 2000 in degrees celsius
-    print(temp_deltas)
     temps = [t + 8.5 for t in temp_deltas]
     return sealevel(temps)
