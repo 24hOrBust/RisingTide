@@ -110,7 +110,7 @@ var app = new Vue({
   },
   computed: {
     mapUrl() {
-      return `https://labs.mapbox.com/bites/00307/?elev=${this.selectedSeaLevel}#9/0.1318/-49.6609`
+      return `https://labs.mapbox.com/bites/00307/?elev=${this.selectedSeaLevel}#10/40.8102/-73.8089`
     }
   }
 });
