@@ -22,6 +22,7 @@
             Changing Tides
           </h1>
           <h2>Exploratory Climate Change Simulator</h2>
+          <a id="citelink" href="/static/citations.html">Citations</a>
           <hr />
           <emissions-slider v-for="(slider,index) in sliders" v-bind:first="index == 0" v-bind:name="slider.name"
             v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>

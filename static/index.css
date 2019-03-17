@@ -32,6 +32,10 @@ hr {
   color: #FFFFFF;
 }
 
+#citelink {
+  color: white;
+}
+
 #container {
   display: grid;
   grid-template-columns: 400px auto;
