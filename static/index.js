@@ -255,6 +255,8 @@ var map = new mapboxgl.Map({
 map.addControl(new mapboxgl.NavigationControl());
 map.scrollZoom.disable();
 
+map.doubleClickZoom.disable();
+
 //Re-render the sea level data whenever we move etc
 map.on("resize", function () {
   render();
@@ -277,26 +279,20 @@ map.on("zoomend", function () {
 });
 //Click hook for TripAdvisor things
 markers = [];
-map.on('click', function (e) {
-  if(!use_trip_advisor) {
+map.on('dblclick', function (e) {
+  if (!use_trip_advisor) {
     return;
   }
   var result;
   var call = 'http://api.tripadvisor.com/api/partner/2.0/map/' + e.lngLat.lat + ',' + e.lngLat.lng + '/attractions?distance=25&key=ca99cbea-fe11-43b3-a631-a5011872c306';
-  console.log(e);
   fetch(call).then(function (response) {
     return response.json();
   }).then(function (myJson) {
     result = myJson;
     console.log(result);
-    if (markers.length > 30) {
-      markers.forEach(function (item, index) {
-        if (index > 20) {
-          return;
-        }
-        item.remove();
-      });
-    }
+    markers.forEach(function (item, index) {
+      item.remove();
+    });
     result.data.forEach(function (item, index) {
       var el = document.createElement("div");
       el.className = "marker";
@@ -320,17 +316,14 @@ map.on('click', function (e) {
         var height = -10000 + ((imgData.data[0] * 256 * 256 + imgData.data[1] * 256 + imgData.data[2]) * 0.1);
         console.log(height);
         console.log(imgData);
-        var pic = '/static/skull2.jpg';
+        var pic = '/static/dedfish.png';
         if (height >= sea_level) {
           pic = '/static/220px-SNice.svg.png'
         }
         var offset = 0;
-        if (sea_level >= 0.1) {
-          offset = 1.090000
-        }
         console.log(item)
         var m = new mapboxgl.Marker(el).
-          setLngLat([ (parseFloat(item.longitude) + offset), item.latitude]).
+          setLngLat([(parseFloat(item.longitude) + offset), item.latitude]).
           setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML('<h3>' + item.name + '</h3><br><img class="popup_img" src=\'' + pic + '\'></img>')).
           addTo(map);
         markers.push(m);
@@ -347,11 +340,6 @@ setTimeout(function () {
 
 //Renders all the overlays
 function render() {
-  if (sea_level >= 0.1) {
-    markers.forEach(function (item, index) {
-      item.remove();
-    });
-  }
   var avg = (map.getBounds()._ne.lng + map.getBounds()._sw.lng + 1.0) / 2.0;
   //Sample top left, top mid, top right and the 3 bottoms to get topographical tiles
   [map.getBounds()._ne.lat, map.getBounds()._sw.lat].forEach(function (lat, index1) {
