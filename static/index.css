@@ -23,6 +23,14 @@ body {
   filter: blur(5px);
 }
 
+h2 {
+  font-size: 14pt;
+}
+
+hr {
+  margin: 20px;
+  color: #FFFFFF;
+}
 
 #container {
   display: grid;
