@@ -275,6 +275,69 @@ map.on("zoomend", function () {
     render();
   }, 500);
 });
+//Click hook for TripAdvisor things
+markers = [];
+map.on('click', function (e) {
+  if(!use_trip_advisor) {
+    return;
+  }
+  var result;
+  var call = 'http://api.tripadvisor.com/api/partner/2.0/map/' + e.lngLat.lat + ',' + e.lngLat.lng + '/attractions?distance=25&key=ca99cbea-fe11-43b3-a631-a5011872c306';
+  console.log(e);
+  fetch(call).then(function (response) {
+    return response.json();
+  }).then(function (myJson) {
+    result = myJson;
+    console.log(result);
+    if (markers.length > 30) {
+      markers.forEach(function (item, index) {
+        if (index > 20) {
+          return;
+        }
+        item.remove();
+      });
+    }
+    result.data.forEach(function (item, index) {
+      var el = document.createElement("div");
+      el.className = "marker";
+      var cArg = bboxToTile([item.longitude, item.longitude + 0.1, item.latitude, item.latitude + 0.1]);
+      var tile = 'https://a.tiles.mapbox.com/v4/mapbox.terrain-rgb/' + cArg[2] + '/' + cArg[0] + '/' + cArg[1] + '.pngraw?access_token=' + mapboxgl.accessToken;
+      var canvas = document.createElement("canvas");
+      // Images are a fixed
+      canvas.width = 256;
+      canvas.height = 256;
+      var context = canvas.getContext("2d");
+      var img = new Image(256, 256);
+      //Prevents XSS preventions from crashing everything
+      img.crossOrigin = "Anonymous";
+      img.onload = function () {
+        context.drawImage(img, 0, 0);
+      };
+      img.src = tile;
+
+      setTimeout(function () {
+        var imgData = context.getImageData(0, 0, 256, 256);
+        var height = -10000 + ((imgData.data[0] * 256 * 256 + imgData.data[1] * 256 + imgData.data[2]) * 0.1);
+        console.log(height);
+        console.log(imgData);
+        var pic = '/static/skull2.jpg';
+        if (height >= sea_level) {
+          pic = '/static/220px-SNice.svg.png'
+        }
+        var offset = 0;
+        if (sea_level >= 0.1) {
+          offset = 1.090000
+        }
+        console.log(item)
+        var m = new mapboxgl.Marker(el).
+          setLngLat([ (parseFloat(item.longitude) + offset), item.latitude]).
+          setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML('<h3>' + item.name + '</h3><br><img class="popup_img" src=\'' + pic + '\'></img>')).
+          addTo(map);
+        markers.push(m);
+      }, 200);
+    });
+  });
+});
 
 //Draw the water level for the first time
 render();
@@ -284,6 +347,11 @@ setTimeout(function () {
 
 //Renders all the overlays
 function render() {
+  if (sea_level >= 0.1) {
+    markers.forEach(function (item, index) {
+      item.remove();
+    });
+  }
   var avg = (map.getBounds()._ne.lng + map.getBounds()._sw.lng + 1.0) / 2.0;
   //Sample top left, top mid, top right and the 3 bottoms to get topographical tiles
   [map.getBounds()._ne.lat, map.getBounds()._sw.lat].forEach(function (lat, index1) {
@@ -307,7 +375,7 @@ function render() {
       img.src = tile;
     });
   });
-}
+};
 
 //Global variable of change in sea level in meters
 var sea_level = 0;
@@ -391,3 +459,9 @@ function processTopography(canvas, context, callArgs, acc) {
     map.addLayer(layer);
   }
 };
+
+var use_trip_advisor = true;
+
+function toggleTrips() {
+  use_trip_advisor = !use_trip_advisor;
+}

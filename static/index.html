@@ -21,6 +21,8 @@
           <emissions-slider v-for="(slider,index) in sliders" v-bind:first="index == 0" v-bind:name="slider.name"
             v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
           <button @click="simulate">Simulate</button>
+          <br>
+          <input type="checkbox" id="myCheck" onclick="toggleTrips()"><div id="checkText">Disable TripAdvisor</div>
         </div>
 
         <div id="map" v-bind:class="{blurred:!simulated}">
