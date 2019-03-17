@@ -51,6 +51,7 @@ var options = {
     valueSuffix: '°C'
   },
   chart: {
+    height:window.innerHeight / 1.8,
     events: {
       click: function (e) {
         var chart = this;
@@ -129,6 +130,11 @@ var app = new Vue({
     selectedSeaLevel: 0,
     seaLevels: []
   },
+  // mounted() {
+  //   console.log(this.$refs.chart);
+  //   this.$refs.chart.chart.renterTo.style.height = "2%";
+
+  // },
   beforeMount() {
     let self = this;
     fetch('/static/config.json')
@@ -176,8 +182,6 @@ var app = new Vue({
         setTimeout(function () {
           render();
         }, 500);
-
-
       })
     }
   },

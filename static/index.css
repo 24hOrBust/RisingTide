@@ -23,14 +23,11 @@ body {
   filter: blur(5px);
 }
 
-#app {
-  height: .1vh;
-}
 
 #container {
   display: grid;
   grid-template-columns: 400px auto;
-  grid-template-rows: 0.80fr 0.2fr 0;
+  grid-template-rows: 0.80fr 0.20fr 0;
 }
 
 #sliders {
