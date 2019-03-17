@@ -16,7 +16,7 @@
       </div>
 
       <div id="map" v-bind:class="{blurred:!simulated}">
-        <iframe v-bind:src="mapUrl" width="100%" height="100%"></iframe>
+        <iframe ref="iframe" v-bind:src="mapUrl" width="100%" height="100%"></iframe>
       </div>
 
       <div id="plot" v-bind:class="{blurred:!simulated}">

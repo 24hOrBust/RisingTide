@@ -1,4 +1,6 @@
 
+const START_YEAR = 1765;
+
 Vue.component('emissions-slider', {
   props: ['name', 'value', 'scale'],
   data: function () {
@@ -53,11 +55,13 @@ var options = {
   series: [{
     name: 'Global Mean Temperature',
     data: [],
-    pointStart: 1765,
+    pointStart: START_YEAR,
     point: {
       events: {
         mouseOver: function() {
-          console.log(this.x);
+          let yearIndex = this.x - START_YEAR;
+          console.log(app.seaLevels[yearIndex]);
+          app.selectedSeaLevel = app.seaLevels[yearIndex];
         }
       }
     }
@@ -70,7 +74,8 @@ var app = new Vue({
     sliders: [],
     simulated: true,
     chartOptions: options,
-    selectedSeaLevel: 0
+    selectedSeaLevel: 0,
+    seaLevels: []
   },
   beforeMount() {
     let self = this;
@@ -95,7 +100,8 @@ var app = new Vue({
         return resp.json();
       }).then(function(body) {
         console.log(body);
-        self.chartOptions.series[0].data = body.temperatures;
+        self.chartOptions.series[0].data = body.global_temps;
+        self.seaLevels = body.sea_levels;
         //self.chartOptions.series[0].pointStart = body.start_year;
         self.simulated = true;
         
