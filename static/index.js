@@ -23,9 +23,7 @@ Vue.component('emissions-slider', {
           <p>
             <h3>{{name}}</h3>
             <div class="slidercontainer">
-            <v-slider
-            v-model="slider"
-          ref="slider" v-model="slider_value" @input="update" min="0" max="200"></v-slider> 
+            <v-slider ref="slider" v-model="slider_value" @input="update" min="0" max="200"></v-slider> 
             </div>
           </p>
           <div class="slider-value">{{result}} GT CO<sub>2</sub> | {{slider_value}}%</div>
@@ -98,7 +96,7 @@ var app = new Vue({
     simulate() {
       let self = this;
       self.simulated = false;
-      var totalCarbon = this.sliders.map(s => s.value).reduce((a,b)=>a+b);
+      var totalCarbon = this.sliders.map(s => Number(s.value)).reduce((a,b)=>a+b);
       fetch('/api/simulation?fossil_gtc_carbon=' + totalCarbon).then(function(resp){
         return resp.json();
       }).then(function(body) {
