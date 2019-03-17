@@ -24,10 +24,14 @@ body {
 }
 
 #app {
-  height: 60%;
+  height: .1vh;
+}
+
+#container {
+  height: 100%;
   display: grid;
   grid-template-columns: 400px auto;
-  grid-template-rows: 0.75fr 0.25fr;
+  grid-template-rows: 0.80fr 0.2fr;
 }
 
 #sliders {

@@ -23,7 +23,9 @@ Vue.component('emissions-slider', {
           <p>
             <h3>{{name}}</h3>
             <div class="slidercontainer">
-              <input class="slider" type="range" ref="slider" v-model="slider_value" @input="update" min="0" max="200"></input>
+            <v-slider
+            v-model="slider"
+          ref="slider" v-model="slider_value" @input="update" min="0" max="200"></v-slider> 
             </div>
           </p>
           <div class="slider-value">{{result}} GT CO<sub>2</sub> | {{slider_value}}%</div>
@@ -34,7 +36,6 @@ var options = {
   title: {
     text: 'Global Average Temperature',
     color: "#fffff",
-    x: -20 //center
   },
   xAxis: {
     crosshair: true
@@ -48,6 +49,8 @@ var options = {
       width: 1,
       color: '#FF0000'
     }],
+    min: -2,
+    max: 5
   },
   tooltip: {
     valueSuffix: '°C'
