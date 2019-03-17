@@ -3,14 +3,14 @@ import urllib.request
 import json
 
 
-def sealevel(temperatures):
+def sealevel_old(temperatures):
     """
   Returns change in sea level in meters.
   Temperatures is in absolute degrees celsius.
   """
 
     params = urllib.parse.urlencode({'t': temperatures}, doseq=True)
-    url = "https://www.wolframcloud.com/objects/7f573ce7-e6a1-425c-ae68-c28e028a263e" + "?" + params
+    url = "https://www.wolframcloud.com/objects/132a9d0d-9e3a-4d76-93b8-d92068b3d949" + "?" + params
 
     req = urllib.request.Request(url)
     r = urllib.request.urlopen(req).read()
@@ -19,6 +19,9 @@ def sealevel(temperatures):
     sealevels = json.loads(r_str)
 
     return sealevels
+
+def sealevel(temperatures):
+  return list(map(lambda t : -2.51 + 1.63*t - 12.68, temperatures))
 
 
 def get_sea_level(temp_deltas):

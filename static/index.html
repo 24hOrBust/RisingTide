@@ -9,26 +9,29 @@
   </head>
   <body>
     <div id="app">
-
-      <div id="sliders">
-        <emissions-slider v-for="slider in sliders" v-bind:name="slider.name" v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
-        <button @click="simulate">Simulate</button>
-      </div>
-
-      <div id="map">
-        <iframe src="https://labs.mapbox.com/bites/00307/?elev=0#9/0.1318/-49.6609" width="100%" height="100%"></iframe>
-      </div>
-
-      <div id="plot" v-bind:class="{blurred:!simulated}">
-        <highcharts :options="chartOptions"></highcharts>
-      </div>
-
+      <v-app dark>
+        <div id="container">
+          <div id="sliders">
+            <emissions-slider v-for="(slider,index) in sliders" v-bind:first="index == 0" v-bind:name="slider.name" v-bind:scale="slider.scale" v-model="slider.value"></emissions-slider>
+            <button @click="simulate">Simulate</button>
+          </div>
+  
+          <div id="map" v-bind:class="{blurred:!simulated}">
+            <iframe ref="iframe" v-bind:src="mapUrl" width="100%" height="100%"></iframe>
+          </div>
+  
+          <div id="plot" v-bind:class="{blurred:!simulated}">
+            <highcharts ref="chart" :options="chartOptions"></highcharts>
+          </div>
+        </div>
+      </v-app>
     </div>
     <script src="/static/dark-unica.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highcharts@6/highcharts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/7.0.3/themes/dark-unica.src.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
     <!-- vue-highcharts should be load after Highcharts -->
     <script src="https://cdn.jsdelivr.net/npm/vue-highcharts/dist/vue-highcharts.min.js"></script>
     <script src="/static/index.js"></script>

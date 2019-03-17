@@ -1,8 +1,28 @@
 {
   "sliders": [
     {
-      "name": "GT C02",
-      "scale": "3.71"
+      "name":"Coal",
+      "scale":1.480
+    },
+    {
+      "name":"Natural Gas",
+      "scale":1.483
+    },
+    {
+      "name":"Distillate Fuel Oil (Diesel, etc.)",
+      "scale":0.598
+    },
+    {
+      "name":"Motor Gasoline",
+      "scale":1.125
+    },
+    {
+      "name":"Jet Fuel",
+      "scale":0.227
+    },
+    {
+      "name": "Miscellaneous Emissions",
+      "scale": 0.579
     }
   ]
 }

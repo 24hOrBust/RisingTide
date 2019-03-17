@@ -16,26 +16,31 @@ body {
 }
 
 .blurred {
-  -webkit-filter: blur(2px);
-  -moz-filter: blur(2px);
-  -o-filter: blur(2px);
-  -ms-filter: blur(2px);
-  filter: blur(2px);
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
 }
 
 #app {
+  height: .1vh;
+}
+
+#container {
   display: grid;
   grid-template-columns: 400px auto;
-  grid-template-rows: 0.75hv 0.15vh;
+  grid-template-rows: 0.80fr 0.2fr 0;
 }
 
 #sliders {
   grid-area: 'sliders';
   grid-row-start: 1;
-  grid-row-end: 2;
+  grid-row-end: 3;
   grid-column-start: 1;
-  grid-column-start: 1;
+  grid-column-end: 1;
   padding: 10px;
+  overflow-y: scroll;
 }
 
 #map {
@@ -43,7 +48,7 @@ body {
   grid-row-start: 1;
   grid-row-end: 1;
   grid-column-start: 2;
-  grid-column-start: 2;
+  grid-column-end: 2;
 }
 
 #plot {
@@ -51,11 +56,15 @@ body {
   grid-row-start: 2;
   grid-row-end: 2;
   grid-column-start: 2;
-  grid-column-start: 2;
+  grid-column-end: 2;
 }
 
-.slidecontainer {
-  width: 100%; /* Width of the outside container */
+.sliderheader {
+  margin-top: -20px;
+}
+
+.sliderheader .first {
+  margin-top: 0px;
 }
 
 .slider {
