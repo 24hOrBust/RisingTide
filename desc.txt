@@ -1,0 +1,43 @@
+## Inspiration
+Many people have trouble internalizing the seemingly insurmountable problem of climate change. This is often due to a lack of interaction with the problem at hand.
+## What it does
+Changing Tides allows individuals to experiment with the effects of climate change by changing global carbon emissions. Sliders for major emission sources enable users to make there own global climate policy. Changing Tides then visualize the results of the emission in terms of a plot of sea level vs time and a map of land that will go under water.
+## How we built it
+Changing Tides uses the Magicc climate model for temperature predictions. Magicc is a simple climate model developed by the National Center For Atmospheric Research and Manchester Metropolitan University. Magicc uses a uses a “simple global average energy-balance equation” coupled with an integrated box carbon cycle model and a ocean upwell model. pyMagicc is used to interface with Magicc.
+
+The sea levels are provided by a linear model generated from simulation data from "Cenozoic global ice-volume and temperature simulations with 1-D ice-sheet models forced by benthic d18O records". The fit is done using Wolfram Mathmatica.
+
+Carbon emissions data is sourced from “Monthly Energy Review” from the U.S. Energy Information Administration.
+
+The front end is build using Vue.js as well as Vuetify, a material design framework. Visualization is provided by Map Box and Highcharts. The Tripadvisor api is used to source location that will go underwater given the scenario.
+
+The backend runs on Python. Flask is used to expose the models over a RESTful interface. The server is run on Windows Server running on GCP Compute Engine. Windows Server is required as Magicc only runs on Windows. IIS is used as a reverse proxy and Waitress is used as a WSGI container.
+
+## Challenges we ran into
+Building the inundation map presented a wide array of challenges. Because this is such an unusual task, much of the Mapbox API methods we needed were not documented. Ultimately Sam Cohen pulled an all nighter and was build the visualization we now have.
+
+Installing Magicc was also difficult. The code is actually written in Fortran, and is barely compatible with modern systems as it is only intended to be used by a small set of professionals. Furthermore the pyMaggic interface is less maintained than we would have liked.
+
+Tweaking the models was also difficult. Most of these datasets use relative temperatures and finding the base value was often difficult. A lot of the offsets had to be determined by comparing simulation results to real world values.
+
+## Accomplishments that we're proud of
+Mapbox Visualization!
+Tripadvisor Integration in a small time frame.
+UX quality.
+Scientific Rigor.
+## What we learned
+This model shows that even if we stop carbon emission immediately, we will still lose some coastal areas. That's really scary!
+## What's next for Changing Tides
+The most important change would be to develop a better understanding of the models used. Not only would this give the base values of the units, but it would improve our ability to present the models insites to users.
+
+We would also like to make the site more mobile friendly.
+
+## Citations
+M. Meinshausen1, S. C. B. Raper2, and T. M. L. Wigley3. "mulating coupled atmosphere-ocean and carbon cycle models with a simpler model, MAGICC6 – Part 1: Model description and calibration". (2011, February 16)
+
+Robert Gieseke, Zeb Nicholls, Jared Lewis, Sven Willner, & Matthias Mengel. "openclimatedata/pymagicc: v1.3.2 (Version v1.3.2)." (2018, October 15). http://doi.org/10.5281/zenodo.1462562
+
+U.S. Energy Information Administration. "Monthly Energy Review." (2019, February 25).
+de Boer, B., van de Wal, R.S.W., Bintanja, R., Lourens, L.J., Tuenter, E. "Cenozoic global ice-volume and temperature simulations with 1-D ice-sheet models forced by benthic d18O records", Annals of Glaciology, 51 (55), 23-33, 2010
+
+Wolfram Research, "Sea Level and Temperatures Over the Last 40 Million Years" from the Wolfram Data Repository (2019) https://doi.org/10.24097/wolfram.90759.data
